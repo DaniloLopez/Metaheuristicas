@@ -1,0 +1,1 @@
+funcion	Algoritmo	D	Pro.Itr	mejor Optimo	Peor Optimo	Promedio Optimos	Desviacion Optimos	TiempoPromedio
