@@ -15,6 +15,7 @@ import Utilidades.ResultadoFuncion;
 import Utilidades.ResultadoIndividuo;
 import funciones.*;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -112,38 +113,25 @@ public class Metaheuristicas {
         //vector de resultados        
         Individuo resultados[] = new Individuo[cantPruebas];               
         ArrayList<ResultadoIndividuo> res = new ArrayList();
-        
-        int it = 0;
+                
         ResultadoFuncion resFun;
         for (HillClimbingAbstract algHC : algoritmos) {        
+            String nombre = algHC.getNonmbreFuncion();
             for (int i = 0; i < cantPruebas; i++) {
                 Double vectorAleatorios[] = ut.vectorAleatorioDecimal(i, algHC.getFunction().getMin(), algHC.getFunction().getMax(), dimensiones);                                
                 //iniciar algoritmo hill climbing
                 double start = System.currentTimeMillis();                                    
                 resFun = algHC.inicio(new Individuo(vectorAleatorios, objEsfera, prob, radio, paso),EFOs);                
                 double end = System.currentTimeMillis() - start;
-                res.add(new ResultadoIndividuo(
-                                                algHC.getNonmbreFuncion(),
-                                                algHC.getClass().getSimpleName(), 
-                                                resFun.getIteracion(), 
-                                                end, 
-                                                resFun.getResultado()
-                                                )
-                        );
-            }            
-            
+                res.add(new ResultadoIndividuo( algHC.getNonmbreFuncion(),algHC.getClass().getSimpleName(), 
+                                                resFun.getIteracion(), end, resFun.getResultado()));
+            }                        
             calcularEstadisticas(res, algHC);
             res.clear();
             System.out.println("********encontrado:  "+algHC.getClass().getSimpleName());
-//            for (Individuo resultado : resultados) {
-//                System.out.println(it + "  resultado: " + Arrays.toString(resultado.getCromosoma()));
-//            }
-            it ++;
-        }               
-        
-        //recibe el nombre del archivo
-        excribirResultados("D:\\1. Universidad\\Unicauca 2017-2\\Metaheuristicas\\quiz\\resultado.txt");
-        //est.calcularResultados(res);                        
+        }
+        //recibe el nombre del archivo para escribir los datos en el archivo
+        excribirResultados("D:\\1. Universidad\\Unicauca 2017-2\\Metaheuristicas\\quiz\\resultado.txt");                           
     }
 
     private static void calcularEstadisticas(ArrayList<ResultadoIndividuo> resultados, HillClimbingAbstract algHC) {
@@ -231,32 +219,52 @@ public class Metaheuristicas {
         Archivo file = new Archivo();
         file.abrirArchivo(nombre, true);
             file.escribirArchivo(fecha, true);
-            String cadena = "Funcion\t\tAlgoritmo\tD\tPro.Itr\t\tmejor Optimo \tPeor Optimo\t\tPromedio Optimos\tDesviacion Optimos\tTiempoPromedio";
+            String cadena = "FUNCIÓN\t\tALGORITMO\t    D\tPRO.ITR\t\t MEJOR OPTIMO\t\tPEOR OPTIMO\t\tPROM OPTIMOS\t     DESVIACION OPTIMOS\t     TIEMPO PROMEDIO";            
             file.escribirArchivo(cadena, true);
-            for (Resultado res : resFinal) {
-                cadena =res.getFuncion() + 
-                        "\t " + res.getAlgoritmo()+ "\t" + 
-                        "\t " + res.getD() + 
-                        "\t " + res.getPromedioIteracion() + 
-                        "\t " + redondearDecimales(res.getMejor_optimo(),10) + 
-                        "\t " + redondearDecimales(res.getPeor_optimo(),10) + 
-                        "\t " + redondearDecimales(res.getPromedioOptimos(), 10) + 
-                        "\t " + redondearDecimales(res.getDesviacionOptimos(), 10) + 
-                        "\t " + redondearDecimales(res.getTiempoPromedio(), 4);
+            String nombreFun = resFinal.get(0).getFuncion();
+            for (Resultado res : resFinal) {                
+                if(!nombreFun.equals(res.getFuncion())){
+                    file.escribirArchivo("", true);
+                    nombreFun = res.getFuncion();
+                }
+                cadena =formatoCadenaTexto(res.getFuncion(),15) +
+                        formatoCadenaTexto(res.getAlgoritmo(),20) + 
+                        res.getD() + 
+                        " " + redondearDecimales(res.getPromedioIteracion(),1,6)+
+                        " " + redondearDecimales(res.getMejor_optimo(),10,10) + 
+                        " " + redondearDecimales(res.getPeor_optimo(),10,10) + 
+                        " " + redondearDecimales(res.getPromedioOptimos(), 10,10) + 
+                        " " + redondearDecimales(res.getDesviacionOptimos(),10,15) + 
+                        " " + redondearDecimales(res.getTiempoPromedio(), 3,1);
                 file.escribirArchivo(cadena, true);
+                
             }
             file.escribirArchivo("\n", false);
         file.cerrarArchivo();
     }
     
-    public static double redondearDecimales(double valorInicial, int numeroDecimales) {
-        double parteEntera, resultado;
-        resultado = valorInicial;
-        parteEntera = Math.floor(resultado);
-        resultado=(resultado-parteEntera)*Math.pow(10, numeroDecimales);
-        resultado=Math.round(resultado);
-        resultado=(resultado/Math.pow(10, numeroDecimales))+parteEntera;
-        return resultado;
+    public static String redondearDecimales(double valorInicial, int numeroDecimales ,int espacios) {                
+        String number = String.format("%."+numeroDecimales+"f", valorInicial);                                
+        String str = String.valueOf(number);
+        String num = str.substring(0, str.indexOf(','));        
+        String numDec = str.substring(str.indexOf(',') + 1);
+        
+        for (int i = num.length(); i < espacios; i++) {
+            num = " " + num;
+        }
+        
+        for (int i = numDec.length(); i < espacios;  i++) {
+            numDec = numDec + " ";
+        }
+        
+        return num +"." + numDec;
+    }
+    
+    public static String formatoCadenaTexto(String cadena, int tamaño){        
+        for (int i = cadena.length(); i < tamaño; i++) {
+            cadena= cadena + " ";
+        }
+        return cadena;        
     }
 
     

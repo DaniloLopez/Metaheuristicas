@@ -37,7 +37,7 @@ public class BetaHillClimbing extends HillClimbingAbstract {
         double max = super.getFunction().getMax();
         x = individuo;
         int itr = 0;        
-        while(itr < EFOs){
+        while(super.getFunction().validateIdealSolution(x) && itr < EFOs ){
             xi = inprove(individuo);
             Double[] cromosoma = xi.getCromosoma();
             for (int i = 0; i < individuo.getCromosoma().length; i++) {                                

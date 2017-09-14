@@ -20,7 +20,7 @@ public class HillClimbing extends HillClimbingAbstract{
     
     /**
      * contructor de la clase HillClimbing
-     * @param fun  clase en donde van a estar los metodos de HillClimbingAbstract implementados     
+     * @param function clase en donde van a estar los metodos de HillClimbingAbstract implementados          
      */        
     public HillClimbing(Funcion function) {
         super(function);

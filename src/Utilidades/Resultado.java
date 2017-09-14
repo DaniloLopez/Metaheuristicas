@@ -32,6 +32,10 @@ public class Resultado{
         this.tiempoPromedio = tiempoPromedio;
     }
 
+    /**
+     * metodo que retorna el nombre d ela funcion ue se esta evaluando
+     * @return nombre de la funcion
+     */
     public String getFuncion() {
         return funcion;
     }

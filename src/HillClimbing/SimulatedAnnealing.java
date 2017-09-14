@@ -46,7 +46,7 @@ public class SimulatedAnnealing extends HillClimbingAbstract{
                 best = super.getFunction().copy(s);
             }               
             iteracion++;
-        }while(super.getFunction().validateIdealSolution(best) || t > 0 && iteracion < EFOs);
+        }while(super.getFunction().validateIdealSolution(best) && t > 0 && iteracion < EFOs);
         return new ResultadoFuncion(best,iteracion);
     }
     
